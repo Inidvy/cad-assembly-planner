@@ -2,5 +2,8 @@
 __pycache__/
 *.pyc
 out*/
+*_run.log
+# Third-party / downloaded CAD models (may be licensed) — keep out of the repo
+3D_files/
 *.egg-info/
 .pytest_cache/

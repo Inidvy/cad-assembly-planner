@@ -12,7 +12,7 @@ def tessellate(shape, deflection: float = 0.4) -> tuple[list[tuple[float, float,
     """
     from OCP.BRep import BRep_Tool
     from OCP.BRepMesh import BRepMesh_IncrementalMesh
-    from OCP.TopAbs import TopAbs_FACE
+    from OCP.TopAbs import TopAbs_FACE, TopAbs_REVERSED
     from OCP.TopExp import TopExp_Explorer
     from OCP.TopLoc import TopLoc_Location
     from OCP.TopoDS import TopoDS
@@ -24,6 +24,7 @@ def tessellate(shape, deflection: float = 0.4) -> tuple[list[tuple[float, float,
     exp = TopExp_Explorer(shape, TopAbs_FACE)
     while exp.More():
         face = TopoDS.Face_s(exp.Current())
+        reversed_face = face.Orientation() == TopAbs_REVERSED
         loc = TopLoc_Location()
         tri = BRep_Tool.Triangulation_s(face, loc)
         if tri is not None:
@@ -35,6 +36,10 @@ def tessellate(shape, deflection: float = 0.4) -> tuple[list[tuple[float, float,
             for i in range(1, tri.NbTriangles() + 1):
                 a, b, c = tri.Triangle(i).Value(1), tri.Triangle(i).Value(2), \
                     tri.Triangle(i).Value(3)
+                # Respect face orientation so outward normals are consistent
+                # (needed for correct signed volume / watertight meshes).
+                if reversed_face:
+                    b, c = c, b
                 tris.append((base + a - 1, base + b - 1, base + c - 1))
         exp.Next()
     return verts, tris
