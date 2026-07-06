@@ -38,20 +38,36 @@ def stacked_blocks() -> Compound:
 def plate_and_screw() -> Compound:
     """A plate with a screw through it. Screw (named, catalog-matchable) sits in
     the plate's hole; correct order: plate first, then screw."""
-    plate = Box(40, 40, 8);  plate.label = "plate"
-    # A simple screw proxy: shaft + head FUSED into one solid (a screw is a
-    # single body), along +Z, seated in the plate.
-    shaft = Pos(0, 0, 4) * Cylinder(radius=3, height=16)
-    head = Pos(0, 0, 13) * Cylinder(radius=5, height=3)
+    # Plate (z -4..4) with a through clearance hole (radius 3.5) for the screw.
+    plate = Box(40, 40, 8) - Cylinder(radius=3.5, height=20)
+    plate.label = "plate"
+    # Screw = shaft (through the hole, z -6..4) + head (resting on plate top,
+    # z 4..7) FUSED into one solid. Head (r=5) > hole (r=3.5) so it seats on top;
+    # shaft (r=3) clears the hole. Removable straight up; plate slides down off it.
+    shaft = Pos(0, 0, -1) * Cylinder(radius=3, height=10)
+    head = Pos(0, 0, 5.5) * Cylinder(radius=5, height=3)
     screw = shaft + head          # fuse -> single solid
     screw.label = "ISO 4762 M6x20"
     asm = Compound(children=[plate, screw]); asm.label = "plate_and_screw"
     return asm
 
 
+def trapped_cube() -> Compound:
+    """A cube sealed inside a hollow box (internal cavity, no opening). The cube
+    cannot leave in ANY direction and the shell cannot move off it -> the
+    sequencer must report an unsolvable assembly, not a blank error."""
+    shell = Box(20, 20, 20) - Box(10, 10, 10)   # sealed void, 0.5mm clearance
+    shell.label = "shell"
+    cube = Box(9, 9, 9)
+    cube.label = "trapped_cube"
+    asm = Compound(children=[shell, cube]); asm.label = "trapped_cube"
+    return asm
+
+
 FIXTURES = {
     "stacked_blocks": stacked_blocks,
     "plate_and_screw": plate_and_screw,
+    "trapped_cube": trapped_cube,
 }
 
 

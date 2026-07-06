@@ -1,0 +1,59 @@
+{
+  "schema_version": "1.0",
+  "source_unit": "mm",
+  "parts": [
+    {
+      "part_id": "p0",
+      "name": "plate",
+      "part_class": "generic",
+      "confidence": 0.9,
+      "flagged_for_review": false
+    },
+    {
+      "part_id": "p1",
+      "name": "ISO 4762 M6x20",
+      "part_class": "screw",
+      "confidence": 0.97,
+      "flagged_for_review": false
+    }
+  ],
+  "steps": [
+    {
+      "order_index": 0,
+      "part_id": "p0",
+      "part_class": "generic",
+      "precedes": [],
+      "subgoal_text": "Place plate (slide 40 mm).",
+      "motion": {
+        "kind": "translate",
+        "direction": [
+          -1.0,
+          0.0,
+          0.0
+        ],
+        "distance_mm": 40.0
+      },
+      "stability": null
+    },
+    {
+      "order_index": 1,
+      "part_id": "p1",
+      "part_class": "screw",
+      "precedes": [
+        "p0"
+      ],
+      "subgoal_text": "Drive ISO 4762 M6x20 along its axis (13 turns).",
+      "motion": {
+        "kind": "screw",
+        "axis": [
+          0.0,
+          0.0,
+          -1.0
+        ],
+        "pitch_mm": 1.0,
+        "turns": 13.0
+      },
+      "stability": null
+    }
+  ]
+}

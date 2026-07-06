@@ -1,0 +1,6 @@
+Assembly instructions
+(units: mm; 2 steps)
+
+1. Place plate (slide 40 mm).  [slide 40 mm along (-1, 0, 0)]
+2. Drive ISO 4762 M6x20 along its axis (13 turns).  [drive along axis (0, 0, -1): 13 turns (1 mm pitch)]
+     - requires already-placed: plate
