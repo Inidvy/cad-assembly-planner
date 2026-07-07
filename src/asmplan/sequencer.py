@@ -64,9 +64,15 @@ def _select_to_remove(candidates, assembly, classifications) -> str:
 def sequence(
     assembly: LoadedAssembly,
     classifications: Optional[dict[str, Classification]] = None,
+    preremoved: Optional[set[str]] = None,
 ) -> SequenceResult:
+    """Auto-sequence the assembly. `preremoved` names parts the operator takes
+    out first by hand (e.g. an interlocked part needing a rotate-to-unlock the
+    auto planner can't discover); they're treated as already gone, so the rest
+    can often sequence cleanly around them."""
+    preremoved = set(preremoved or ())
     graph = build_contact_graph(assembly, classifications)
-    present = {p.part_id for p in assembly.parts}
+    present = {p.part_id for p in assembly.parts} - preremoved
 
     removal_order: list[str] = []
     removal_dir: dict[str, Vec3] = {}

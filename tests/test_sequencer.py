@@ -48,6 +48,18 @@ def test_stacked_precedence_chain():
     assert by_name["mid"] in steps[by_name["top"]].precedes
 
 
+def test_preremoved_parts_are_excluded_from_the_plan():
+    asm = load_step(FIXTURES / "stacked_blocks.step")
+    n = {p.name: p.part_id for p in asm.parts}
+    seq = sequence(asm, classify_assembly(asm), preremoved={n["top"]})
+    ids = {s.part_id for s in seq.steps}
+    assert n["top"] not in ids          # operator handles it by hand
+    assert ids == {n["base"], n["mid"]}  # the rest still sequence
+    # a preremoved part can't be a precedence target either
+    for s in seq.steps:
+        assert n["top"] not in s.precedes
+
+
 def test_trapped_cube_raises_diagnostic():
     asm = load_step(FIXTURES / "trapped_cube.step")
     with pytest.raises(SequencingError) as exc:
